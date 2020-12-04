@@ -4,6 +4,7 @@ function logger(req, res, next) {
    console.log(`[timestamp: ${new Date().toISOString()}] method: ${req.method}, url: ${req.url}, `)
    next()
 }
+
 const validateUserId = async (req, res, next) => {
    const { id } = req.params;
    try {
