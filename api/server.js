@@ -1,5 +1,5 @@
 const express = require('express');
-
+const middlewares = require('../middlewares/middlewares')
 const server = express();
 
 server.get('/', (req, res) => {
@@ -8,12 +8,7 @@ server.get('/', (req, res) => {
 
 //custom middleware
 
-function logger(req, res, next) {
-  console.log(`[timestamp: ${new Date().toISOString()}] method: ${req.method}, url: ${req.url}, `)
-  next()
-}
-
-server.use(logger)
+server.use(middlewares.logger)
 server.use(express.json())
 
 module.exports = server;
