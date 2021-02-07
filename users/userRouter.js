@@ -1,47 +1,78 @@
 const express = require('express');
+const {
+  validateUserId,
+  validateUser,
+  validatePost
+} = require('../middlewares/middlewares')
+const UserHelper = require('./userDb')
+const PostHelper = require('../posts/postDb')
 
 const router = express.Router();
 
-router.post('/', (req, res) => {
-  // do your magic!
+router.post("/", validateUser, async (req, res) => {
+  const user = req.body;
+  try {
+    await UserHelper.insert(user);
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-router.post('/:id/posts', (req, res) => {
-  // do your magic!
+router.post("/:id/posts", validateUserId, validatePost, async (req, res) => {
+  try {
+    const post = PostHelper.insert(post);
+    res.status(201).json(post);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-router.get('/', (req, res) => {
-  // do your magic!
+router.get("/", async (req, res) => {
+  try {
+    const posts = await UserHelper.get();
+    res.status(200).json(posts);
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 
-router.get('/:id', (req, res) => {
-  // do your magic!
+router.get("/:id", validateUserId, (req, res) => {
+  res.status(200).json(req.user);
 });
 
-router.get('/:id/posts', (req, res) => {
-  // do your magic!
+router.get("/:id/posts", validateUserId, async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userPosts = await UserHelper.getUserPosts(id);
+    res.status(200).json(userPosts);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-router.delete('/:id', (req, res) => {
-  // do your magic!
+router.delete("/:id", validateUserId, async (req, res) => {
+  try {
+    const removed = await UserHelper.remove(req.user);
+    res.status(201).status.json(removed);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
-router.put('/:id', (req, res) => {
-  // do your magic!
+router.put("/:id", validateUserId, async (req, res) => {
+  const { id } = req.params
+  let updateCount = 0
+  try {
+    const updatedUser = await UserHelper.update(id, req.body)
+    updateCount = updateCount + 1
+    res.status(201).status.json(updatedUser)
+    console.log(updateCount)
+  } catch (error) {
+    res.status(500).json({ message: error.message})
+  }
 });
 
-//custom middleware
-
-function validateUserId(req, res, next) {
-  // do your magic!
-}
-
-function validateUser(req, res, next) {
-  // do your magic!
-}
-
-function validatePost(req, res, next) {
-  // do your magic!
-}
+//custom middlewar
 
 module.exports = router;
